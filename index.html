@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>두근두근 예민의 진급 스토리</title>
+    <!-- 귀여운 손글씨 폰트 적용 -->
+    <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Dodum&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f7f0e3;
             --gb-body: #ffeaa7;
             --gb-border: #fdcb6e;
             --btn-pink: #ff7675;
             --btn-pink-dark: #d63031;
-            --text-color: #2d3436;
         }
 
         * {
@@ -20,44 +20,45 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            font-family: 'Gamja Flower', 'Gowun Dodum', cursive, sans-serif;
         }
 
-        body {
-            background-color: var(--bg-color);
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #f7f0e3;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             overflow: hidden;
         }
 
         .gameboy-container {
             width: 100vw;
-            max-width: 410px;
             height: 100vh;
-            max-height: 840px;
+            max-width: 430px;
+            max-height: 920px;
             background: var(--gb-body);
-            border-radius: 36px;
-            padding: 20px;
+            border-radius: 28px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 15px 35px rgba(223, 180, 93, 0.4);
-            border: 5px solid var(--gb-border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: 4px solid var(--gb-border);
         }
 
         .screen-frame {
             width: 100%;
-            height: 56%;
-            background: #6c5ce7;
-            border-radius: 20px;
-            padding: 12px;
+            height: 62%;
+            background: #4a47a3;
+            border-radius: 18px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
             position: relative;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.4);
         }
 
         .screen-header {
@@ -65,15 +66,15 @@
             justify-content: space-between;
             align-items: center;
             color: #ffffff;
-            font-size: 13px;
-            font-weight: 800;
-            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         .star-display {
             color: #ffeaa7;
-            font-size: 15px;
-            text-shadow: 1px 1px 2px #000;
+            font-size: 17px;
         }
 
         .canvas-wrapper {
@@ -82,57 +83,56 @@
             flex-grow: 1;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         #game-canvas {
             width: 100%;
             height: 100%;
             display: block;
-            image-rendering: pixelated;
         }
 
+        /* 손글씨 대화창 */
         .dialog-box {
             position: absolute;
-            bottom: 10px;
+            bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 94%;
-            background: rgba(255, 255, 255, 0.95);
+            width: 95%;
+            background: rgba(255, 255, 255, 0.96);
             border: 3px solid #ff7675;
             border-radius: 16px;
-            padding: 12px 14px;
-            font-size: 15px;
-            color: var(--text-color);
-            font-weight: bold;
-            line-height: 1.4;
+            padding: 10px 14px;
+            font-size: 18px;
+            color: #2d3436;
+            line-height: 1.3;
             display: none;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             z-index: 30;
         }
 
         .dialog-next {
             text-align: right;
-            font-size: 12px;
+            font-size: 14px;
             color: #ff7675;
-            margin-top: 6px;
-            font-weight: 800;
+            margin-top: 4px;
+            font-weight: bold;
         }
 
         .controller-area {
             width: 100%;
-            height: 38%;
+            height: 34%;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 10px 0;
+            padding: 5px 0;
         }
 
         .dpad-grid {
             display: grid;
-            grid-template-columns: repeat(3, 46px);
-            grid-template-rows: repeat(3, 46px);
-            gap: 2px;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(3, 50px);
+            gap: 3px;
         }
 
         .dpad-btn {
@@ -146,11 +146,11 @@
             box-shadow: 0 2px 0 #e17055;
         }
 
-        .dpad-up { grid-column: 2; grid-row: 1; border-radius: 12px 12px 4px 4px; }
-        .dpad-left { grid-column: 1; grid-row: 2; border-radius: 12px 4px 4px 12px; }
+        .dpad-up { grid-column: 2; grid-row: 1; border-radius: 14px 14px 4px 4px; }
+        .dpad-left { grid-column: 1; grid-row: 2; border-radius: 14px 4px 4px 14px; }
         .dpad-center { grid-column: 2; grid-row: 2; background: #fab1a0; box-shadow: none; border: none; }
-        .dpad-right { grid-column: 3; grid-row: 2; border-radius: 4px 12px 12px 4px; }
-        .dpad-down { grid-column: 2; grid-row: 3; border-radius: 4px 4px 12px 12px; }
+        .dpad-right { grid-column: 3; grid-row: 2; border-radius: 4px 14px 14px 4px; }
+        .dpad-down { grid-column: 2; grid-row: 3; border-radius: 4px 4px 14px 14px; }
 
         .btn-a-container {
             display: flex;
@@ -159,14 +159,14 @@
         }
 
         .btn-a {
-            width: 80px;
-            height: 80px;
+            width: 85px;
+            height: 85px;
             background: var(--btn-pink);
             border-radius: 50%;
-            border: 3px solid var(--btn-pink-dark);
+            border: 4px solid var(--btn-pink-dark);
             color: white;
-            font-size: 28px;
-            font-weight: 900;
+            font-size: 32px;
+            font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -190,10 +190,10 @@
             <span class="star-display" id="star-display">⭐ x 0</span>
         </div>
         <div class="canvas-wrapper">
-            <canvas id="game-canvas" width="280" height="280"></canvas>
+            <canvas id="game-canvas" width="300" height="300"></canvas>
             <div id="dialog" class="dialog-box">
                 <div id="dialog-text">대화 내용이 출력됩니다.</div>
-                <div class="dialog-next">[A 버튼을 누르세요]</div>
+                <div class="dialog-next">[ A 버튼 누르기 ]</div>
             </div>
         </div>
     </div>
@@ -222,71 +222,58 @@
     let audioCtx = null;
     let bgmStarted = false;
 
-    // 레트로 BGM 무한 재생 엔진
     function initBGM() {
         if (bgmStarted) return;
         bgmStarted = true;
-        
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        // 동물의 숲 감성 멜로디 루프
-        const notes = [
-            261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 329.63, 293.66,
-            261.63, 329.63, 392.00, 440.00, 392.00, 349.23, 329.63, 293.66
-        ];
+        const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 329.63, 293.66];
         let noteIdx = 0;
 
         function playLoop() {
             if (!audioCtx) return;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(notes[noteIdx], audioCtx.currentTime);
-            
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
-            
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
             osc.start();
             osc.stop(audioCtx.currentTime + 0.35);
-
             noteIdx = (noteIdx + 1) % notes.length;
             setTimeout(playLoop, 380);
         }
         playLoop();
     }
 
-    function playSound(freq = 440, type = 'sine', duration = 0.08) {
+    function playSound(freq = 440) {
         if (!audioCtx) return;
         try {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = type;
+            osc.type = 'sine';
             osc.frequency.value = freq;
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start();
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-            osc.stop(audioCtx.currentTime + duration);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+            osc.stop(audioCtx.currentTime + 0.1);
         } catch(e) {}
     }
 
     let gameState = {
         stage: 0,
         stars: 0,
-        player: { x: 120, y: 140, vx: 0, vy: 0 },
-        partner: { x: 100, y: 140 },
+        player: { x: 130, y: 150, vx: 0, vy: 0 },
+        partner: { x: 110, y: 150 },
         dialogIndex: 0,
         dialogList: [],
         popupItem: null,
         iceTracks: [],
-        petals: Array.from({length: 15}, () => ({
-            x: Math.random() * 280,
-            y: Math.random() * 280,
-            speed: 1 + Math.random() * 1.5
+        petals: Array.from({length: 18}, () => ({
+            x: Math.random() * 300, y: Math.random() * 300, speed: 1 + Math.random() * 1.5
         })),
         shootingStar: { x: 0, y: 0, active: false }
     };
@@ -294,7 +281,7 @@
     function triggerPopup(itemType, callback) {
         gameState.popupItem = itemType;
         gameState.popupCallback = callback;
-        playSound(660, 'sine', 0.2);
+        playSound(660);
     }
 
     function updateStarDisplay() {
@@ -310,7 +297,6 @@
     }
 
     function handleInput(type) {
-        // 첫 클릭 시 BGM 시작
         initBGM();
         playSound(type === 'A' ? 587 : 349);
 
@@ -342,7 +328,7 @@
             case 1:
                 if (type === 'A') {
                     gameState.player.x += 12;
-                    if (gameState.player.x >= 180) finishStage1();
+                    if (gameState.player.x >= 200) finishStage1();
                 }
                 break;
             case 2:
@@ -369,10 +355,10 @@
 
     function movePlayer(type) {
         const speed = 14;
-        if (type === 'UP' && gameState.player.y > 40) gameState.player.y -= speed;
-        if (type === 'DOWN' && gameState.player.y < 230) gameState.player.y += speed;
+        if (type === 'UP' && gameState.player.y > 50) gameState.player.y -= speed;
+        if (type === 'DOWN' && gameState.player.y < 240) gameState.player.y += speed;
         if (type === 'LEFT' && gameState.player.x > 30) gameState.player.x -= speed;
-        if (type === 'RIGHT' && gameState.player.x < 230) gameState.player.x += speed;
+        if (type === 'RIGHT' && gameState.player.x < 250) gameState.player.x += speed;
     }
 
     function applyIceSlide(type) {
@@ -386,8 +372,8 @@
     // --- STAGES ---
     function startStage1() {
         gameState.stage = 1;
-        gameState.player = { x: 30, y: 130, vx: 0, vy: 0 };
-        showDialog(["상병 진급 축하해 예민아! 🎖️", "예서와의 소중한 추억 별 5개를 모아봐!", "STAGE 1: A버튼을 마구 눌러 밤 한강의 오리배를 저어가자!"]);
+        gameState.player = { x: 30, y: 160, vx: 0, vy: 0 };
+        showDialog(["상병 진급 정말 축하해 예민아! 🎖️", "예서와의 추억 별 5개를 모두 찾아보자!", "STAGE 1: A버튼을 눌러 밤 한강의 오리배를 저어가자!"]);
     }
 
     function finishStage1() {
@@ -395,81 +381,83 @@
             gameState.stars = 1;
             updateStarDisplay();
             showDialog([
-                "작년 한강 오리배 타던 밤 생각나?",
+                "작년 한강 오리배 타던 아름다운 밤 생각나?",
                 "오빠가 불러준 노래 덕분에 너무 달콤했어 🎵",
-                "⭐ 첫 번째 별 획득!"
+                "⭐ 첫 번째 추억 별 획득!"
             ], () => startStage2());
         });
     }
 
     function startStage2() {
         gameState.stage = 2;
-        gameState.player = { x: 60, y: 190, vx: 0, vy: 0 };
+        gameState.player = { x: 50, y: 210, vx: 0, vy: 0 };
         showDialog(["STAGE 2: 생활반 관물대 서랍에서 '김예민' 명찰을 찾아줘!"]);
     }
 
     function checkCabinetItem() {
-        if (Math.abs(gameState.player.x - 210) < 30 && Math.abs(gameState.player.y - 100) < 30) {
+        if (Math.abs(gameState.player.x - 220) < 40 && Math.abs(gameState.player.y - 120) < 40) {
             triggerPopup('NAME_TAG', () => {
                 gameState.stars = 2;
                 updateStarDisplay();
-                showDialog(["빨간 바탕에 예쁘게 적힌 '김예민' 명찰 발견!", "⭐ 두 번째 별 획득!"], () => startStage3());
+                showDialog(["선명한 빨간 바탕에 예쁜 '김예민' 명찰 발견!", "⭐ 두 번째 추억 별 획득!"], () => startStage3());
             });
         } else {
-            showDialog(["관물대 서랍 속 커플 사진이 보여 💕 명찰은 어디 있을까?"]);
+            showDialog(["관물대에 걸린 롱패딩과 군복, 에어팟이 보여! 명찰 서랍을 열어보자."]);
         }
     }
 
     function startStage3() {
         gameState.stage = 3;
-        gameState.player = { x: 130, y: 220, vx: 0, vy: 0 };
-        showDialog(["STAGE 3: 우리의 첫 데이트 장소 구름 표지판으로 이동해 A버튼을 눌러!"]);
+        gameState.player = { x: 140, y: 230, vx: 0, vy: 0 };
+        showDialog(["STAGE 3: 우리의 첫 데이트 장소 구름 표지판으로 가보자!"]);
     }
 
     function checkQuizAnswer() {
-        if (gameState.player.x > 140 && gameState.player.y < 120) {
+        if (gameState.player.x > 150 && gameState.player.y < 130) {
             triggerPopup('HEART', () => {
                 gameState.stars = 3;
                 updateStarDisplay();
-                showDialog(["정답! 우리의 첫 데이트 장소는 '야탑'! 💖", "⭐ 세 번째 별 획득!"], () => startStage4());
+                showDialog(["정답! 우리의 설레는 첫 데이트 장소는 '야탑'! 💖", "⭐ 세 번째 추억 별 획득!"], () => startStage4());
             });
         } else {
-            showDialog(["땡! 거기가 아니야~ 다시 생각해봐! 😜"]);
+            showDialog(["땡! 거기가 아니야~ 다시 잘 생각해봐! 😜"]);
         }
     }
 
     function startStage4() {
         gameState.stage = 4;
-        gameState.player = { x: 40, y: 200, vx: 0, vy: 0 };
-        showDialog(["STAGE 4: 서희 놀이터 미끄럼틀 뒤에 숨어있는 예서를 찾아봐!"]);
+        gameState.player = { x: 40, y: 220, vx: 0, vy: 0 };
+        showDialog(["STAGE 4: 서희 놀이터 미끄럼틀 기둥 뒤에 꼭꼭 숨은 예서를 찾아봐!"]);
     }
 
     function checkPlayground() {
-        if (Math.abs(gameState.player.x - 190) < 35 && Math.abs(gameState.player.y - 120) < 35) {
+        if (Math.abs(gameState.player.x - 215) < 30 && Math.abs(gameState.player.y - 120) < 30) {
             triggerPopup('PLAYGROUND', () => {
                 gameState.stars = 4;
                 updateStarDisplay();
-                showDialog(["미끄럼틀 뒤에 빼꼼 숨어있던 예서 발견! 💕", "⭐ 네 번째 별 획득!"], () => startStage5());
+                showDialog(["미끄럼틀 기둥 뒤에 몰래 숨어있던 예서 발견! 💕", "⭐ 네 번째 추억 별 획득!"], () => startStage5());
             });
+        } else {
+            showDialog(["여긴 안 보여! 미끄럼틀 오른쪽 뒤편을 유심히 봐봐!"]);
         }
     }
 
     function startStage5() {
         gameState.stage = 5;
-        gameState.player = { x: 50, y: 140, vx: 0, vy: 0 };
-        gameState.partner = { x: 30, y: 140 };
-        showDialog(["STAGE 5: 미끄러운 빙판을 타고 손잡고 중앙으로 가자!"]);
+        gameState.player = { x: 50, y: 150, vx: 0, vy: 0 };
+        gameState.partner = { x: 30, y: 150 };
+        showDialog(["STAGE 5: 미끄러운 빙판을 타고 손잡고 하트 지점으로 가자!"]);
     }
 
     function checkIceRink() {
-        if (Math.abs(gameState.player.x - 200) < 35) {
+        if (Math.abs(gameState.player.x - 220) < 35) {
             triggerPopup('ICE_RINK', () => {
                 gameState.stars = 5;
                 updateStarDisplay();
                 showDialog([
-                    "손 꼭 잡고 미끄러지던 아이스링크 데이트!",
-                    "함께해서 너무 행복했어 ⛸️",
-                    "⭐ 별 5개 모으기 성공!"
+                    "손 꼭 잡고 즐겁게 미끄러지던 아이스링크 데이트!",
+                    "함께여서 매 순간이 정말 행복했어 ⛸️",
+                    "⭐ 별 5개 모두 찾기 성공!"
                 ], () => startEnding());
             });
         }
@@ -483,90 +471,176 @@
 
     function advanceEnding() {
         const credits = [
-            "9개월 동안 정말 고생 많았어!",
-            "조금만 더 힘내서 멋지게 꽃길 걷자 🌸",
-            "상병 진급 진심으로 축하해 예민아!",
-            "✨ 너무너무 사랑해! ✨"
+            "9개월 동안 국방의 의무 다하느라 고생 많았어!",
+            "조금만 더 힘내서 다치지 말고 멋지게 꽃길 걷자 🌸",
+            "상병 진급을 진심으로 너무너무 축하해 예민아!",
+            "✨ 세상에서 제일 사랑해! ✨"
         ];
         if (gameState.endingStep < credits.length) {
             showDialog([credits[gameState.endingStep]]);
             gameState.endingStep++;
         } else {
-            showDialog(["🎉 게임을 완수했습니다! 🎉", "[다시 하려면 새로고침을 해주세요]"]);
+            showDialog(["🎉 축하합니다! 상병 진급 엔딩! 🎉", "[ 다시 하려면 새로고침을 해주세요 ]"]);
         }
     }
 
     // --- DRAWING FUNCTIONS ---
 
-    function drawPixelRect(x, y, w, h, color) {
-        ctx.fillStyle = color;
-        ctx.fillRect(Math.floor(x), Math.floor(y), w, h);
-    }
+    // 제대로 된 디테일 해병대/육군 군복 캐릭터 드로잉
+    function drawDetailedCharacter(x, y, isYemin = true) {
+        ctx.save();
+        if (isYemin) {
+            // 예민: 베레모 & 디지털 군복
+            // 베레모
+            ctx.fillStyle = '#2d3436';
+            ctx.beginPath();
+            ctx.ellipse(x+15, y+5, 14, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
 
-    function drawBigCharacter(x, y, isYemin = true) {
-        drawPixelRect(x+4, y, 20, 8, isYemin ? '#2d3436' : '#6c5ce7');
-        drawPixelRect(x+2, y+8, 24, 12, '#ffeaa7');
-        drawPixelRect(x+6, y+12, 4, 4, '#2d3436');
-        drawPixelRect(x+18, y+12, 4, 4, '#2d3436');
-        drawPixelRect(x+3, y+15, 4, 2, '#ff7675');
-        drawPixelRect(x+21, y+15, 4, 2, '#ff7675');
-        drawPixelRect(x+12, y+16, 4, 2, '#d63031');
-        drawPixelRect(x+2, y+20, 24, 12, isYemin ? '#00b894' : '#fd79a8');
-        drawPixelRect(x+4, y+32, 7, 5, '#636e72');
-        drawPixelRect(x+17, y+32, 7, 5, '#636e72');
+            // 얼굴
+            ctx.fillStyle = '#ffeaa7';
+            ctx.beginPath();
+            ctx.arc(x+15, y+14, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 콩눈 & 볼터치
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(x+10, y+12, 3, 3);
+            ctx.fillRect(x+17, y+12, 3, 3);
+            ctx.fillStyle = '#ff7675';
+            ctx.fillRect(x+8, y+15, 3, 2);
+            ctx.fillRect(x+19, y+15, 3, 2);
+
+            // 군복 (얼룩무늬 패턴 느낌)
+            ctx.fillStyle = '#00b894';
+            ctx.fillRect(x+6, y+24, 18, 14);
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(x+8, y+26, 4, 4);
+            ctx.fillRect(x+16, y+30, 5, 4);
+            ctx.fillStyle = '#636e72';
+            ctx.fillRect(x+12, y+28, 4, 3);
+
+            // 신발
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(x+7, y+38, 6, 5);
+            ctx.fillRect(x+17, y+38, 6, 5);
+        } else {
+            // 예서: 분홍 머리띠 & 귀여운 분홍 원피스
+            ctx.fillStyle = '#fd79a8';
+            ctx.fillRect(x+5, y+3, 20, 3); // 머리띠
+
+            // 머리카락
+            ctx.fillStyle = '#6c5ce7';
+            ctx.beginPath();
+            ctx.arc(x+15, y+12, 11, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 얼굴
+            ctx.fillStyle = '#ffeaa7';
+            ctx.beginPath();
+            ctx.arc(x+15, y+14, 9, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 눈 & 볼터치 & 입
+            ctx.fillStyle = '#2d3436';
+            ctx.fillRect(x+10, y+13, 3, 3);
+            ctx.fillRect(x+17, y+13, 3, 3);
+            ctx.fillStyle = '#ff7675';
+            ctx.fillRect(x+7, y+16, 4, 2);
+            ctx.fillRect(x+19, y+16, 4, 2);
+
+            // 원피스
+            ctx.fillStyle = '#ff7675';
+            ctx.beginPath();
+            ctx.moveTo(x+15, y+23);
+            ctx.lineTo(x+4, y+37);
+            ctx.lineTo(x+26, y+37);
+            ctx.closePath();
+            ctx.fill();
+
+            // 구두
+            ctx.fillStyle = '#d63031';
+            ctx.fillRect(x+8, y+37, 5, 4);
+            ctx.fillRect(x+17, y+37, 5, 4);
+        }
+        ctx.restore();
     }
 
     function renderPopup() {
         if (!gameState.popupItem) return;
 
-        drawPixelRect(0, 0, 280, 280, 'rgba(45, 52, 54, 0.7)');
-        drawPixelRect(25, 30, 230, 200, '#ffffff');
-        drawPixelRect(30, 35, 220, 190, '#ffeaa7');
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.fillRect(0, 0, 300, 300);
+
+        // 팝업 카드
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(20, 30, 260, 220);
+        ctx.fillStyle = '#fff9e6';
+        ctx.fillRect(25, 35, 250, 210);
+        ctx.strokeStyle = '#ff7675';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(25, 35, 250, 210);
 
         ctx.fillStyle = '#2d3436';
-        ctx.font = 'bold 16px "Apple SD Gothic Neo", sans-serif';
+        ctx.font = '22px "Gamja Flower"';
         ctx.textAlign = 'center';
 
         if (gameState.popupItem === 'DUCKS') {
-            ctx.fillText("✨ 한강 오리배 추억 ✨", 140, 70);
-            drawPixelRect(100, 95, 80, 45, '#fdcb6e');
-            drawPixelRect(160, 85, 20, 15, '#e17055');
-            ctx.font = '13px "Apple SD Gothic Neo"';
-            ctx.fillText("[ A 버튼을 눌러 계속 ]", 140, 195);
-        } else if (gameState.popupItem === 'NAME_TAG') {
-            ctx.fillText("✨ 커플 명찰 ✨", 140, 70);
-            drawPixelRect(60, 95, 160, 65, '#d63031');
-            drawPixelRect(65, 100, 150, 55, '#ff7675');
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 24px "Apple SD Gothic Neo"';
-            ctx.fillText("김 예 민", 140, 137);
+            ctx.fillText("✨ 한강 오리배 추억 ✨", 150, 70);
+            ctx.fillStyle = '#fdcb6e';
+            ctx.beginPath();
+            ctx.arc(150, 120, 25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#e17055';
+            ctx.fillRect(165, 115, 15, 10);
             ctx.fillStyle = '#2d3436';
-            ctx.font = '13px "Apple SD Gothic Neo"';
-            ctx.fillText("[ A 버튼을 눌러 계속 ]", 140, 195);
+            ctx.font = '16px "Gowun Dodum"';
+            ctx.fillText("[ A 버튼을 눌러 계속 ]", 150, 215);
+        } else if (gameState.popupItem === 'NAME_TAG') {
+            ctx.fillText("✨ 커스텀 빨간 명찰 ✨", 150, 70);
+            ctx.fillStyle = '#d63031';
+            ctx.fillRect(65, 100, 170, 70);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(70, 105, 160, 60);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 30px "Gowun Dodum"';
+            ctx.fillText("김 예 민", 150, 145);
+            ctx.fillStyle = '#2d3436';
+            ctx.font = '16px "Gowun Dodum"';
+            ctx.fillText("[ A 버튼을 눌러 계속 ]", 150, 215);
         } else if (gameState.popupItem === 'HEART') {
-            ctx.fillText("💖 첫 데이트 야탑 💖", 140, 70);
-            drawPixelRect(110, 95, 60, 50, '#ff7675');
-            ctx.font = '13px "Apple SD Gothic Neo"';
-            ctx.fillText("[ A 버튼을 눌러 계속 ]", 140, 195);
+            ctx.fillText("💖 첫 데이트 야탑 💖", 150, 70);
+            ctx.fillStyle = '#ff7675';
+            ctx.font = '50px sans-serif';
+            ctx.fillText("💖", 150, 140);
+            ctx.fillStyle = '#2d3436';
+            ctx.font = '16px "Gowun Dodum"';
+            ctx.fillText("[ A 버튼을 눌러 계속 ]", 150, 215);
         } else if (gameState.popupItem === 'PLAYGROUND') {
-            ctx.fillText("🌙 서희 놀이터 추억 🌙", 140, 70);
-            drawPixelRect(110, 95, 60, 50, '#74b9ff');
-            ctx.font = '13px "Apple SD Gothic Neo"';
-            ctx.fillText("[ A 버튼을 눌러 계속 ]", 140, 195);
+            ctx.fillText("🌙 서희 놀이터 추억 🌙", 150, 70);
+            ctx.fillStyle = '#74b9ff';
+            ctx.font = '50px sans-serif';
+            ctx.fillText("🛝", 150, 140);
+            ctx.fillStyle = '#2d3436';
+            ctx.font = '16px "Gowun Dodum"';
+            ctx.fillText("[ A 버튼을 눌러 계속 ]", 150, 215);
         } else if (gameState.popupItem === 'ICE_RINK') {
-            ctx.fillText("⛸️ 아이스링크 데이트 ⛸️", 140, 70);
-            drawPixelRect(110, 95, 60, 50, '#0984e3');
-            ctx.font = '13px "Apple SD Gothic Neo"';
-            ctx.fillText("[ A 버튼을 눌러 계속 ]", 140, 195);
+            ctx.fillText("⛸️ 아이스링크 데이트 ⛸️", 150, 70);
+            ctx.fillStyle = '#0984e3';
+            ctx.font = '50px sans-serif';
+            ctx.fillText("⛸️", 150, 140);
+            ctx.fillStyle = '#2d3436';
+            ctx.font = '16px "Gowun Dodum"';
+            ctx.fillText("[ A 버튼을 눌러 계속 ]", 150, 215);
         }
         ctx.textAlign = 'left';
     }
 
     function render() {
-        // 아이스링크 스케이트 궤적 남기기
         if (gameState.stage === 5) {
             if (Math.abs(gameState.player.vx) > 0.5 || Math.abs(gameState.player.vy) > 0.5) {
-                gameState.iceTracks.push({x: gameState.player.x+12, y: gameState.player.y+30, alpha: 1.0});
+                gameState.iceTracks.push({x: gameState.player.x+15, y: gameState.player.y+35, alpha: 1.0});
             }
 
             gameState.player.x += gameState.player.vx;
@@ -575,11 +649,11 @@
             gameState.player.vy *= 0.88;
 
             if (gameState.player.x < 20) gameState.player.x = 20;
-            if (gameState.player.x > 230) gameState.player.x = 230;
-            if (gameState.player.y < 30) gameState.player.y = 30;
-            if (gameState.player.y > 220) gameState.player.y = 220;
+            if (gameState.player.x > 250) gameState.player.x = 250;
+            if (gameState.player.y < 40) gameState.player.y = 40;
+            if (gameState.player.y > 240) gameState.player.y = 240;
 
-            gameState.partner.x = gameState.player.x - 24;
+            gameState.partner.x = gameState.player.x - 22;
             gameState.partner.y = gameState.player.y;
         }
 
@@ -587,158 +661,272 @@
 
         switch(gameState.stage) {
             case 0:
-                drawPixelRect(0, 0, 280, 280, '#ffeaa7');
+                // 타이틀 화면
+                ctx.fillStyle = '#ffeaa7';
+                ctx.fillRect(0, 0, 300, 300);
                 ctx.fillStyle = '#2d3436';
-                ctx.font = 'bold 20px "Apple SD Gothic Neo"';
-                ctx.fillText("두근두근 예민의 진급", 50, 80);
-                ctx.font = '15px "Apple SD Gothic Neo"';
-                ctx.fillText("동물의 숲 감성 추억 여행 🍃", 55, 115);
+                ctx.font = 'bold 26px "Gamja Flower"';
+                ctx.fillText("두근두근 예민의 진급", 60, 85);
+                ctx.font = '20px "Gamja Flower"';
+                ctx.fillText("동물의 숲 감성 추억 여행 🍃", 65, 120);
                 ctx.fillStyle = '#ff7675';
-                ctx.font = 'bold 16px "Apple SD Gothic Neo"';
-                ctx.fillText("[ A 버튼을 눌러 시작 ]", 65, 180);
-                drawBigCharacter(120, 200, true);
+                ctx.font = 'bold 20px "Gamja Flower"';
+                ctx.fillText("[ A 버튼을 눌러 시작 ]", 75, 185);
+                drawDetailedCharacter(135, 210, true);
                 break;
 
             case 1:
-                // 밤하늘 한강 + 유성 연출
-                drawPixelRect(0, 0, 280, 140, '#2d3436');
-                drawPixelRect(0, 140, 280, 140, '#0984e3');
+                // 1. 한강 야경 (남색/보라 밤하늘 그래디언트 + 은하수 별 + 대교 + 오리배)
+                let skyGrad = ctx.createLinearGradient(0, 0, 0, 160);
+                skyGrad.addColorStop(0, '#1e1b4b');
+                skyGrad.addColorStop(1, '#312e81');
+                ctx.fillStyle = skyGrad;
+                ctx.fillRect(0, 0, 300, 160);
 
-                drawPixelRect(220, 20, 25, 25, '#ffeaa7');
-                drawPixelRect(40, 30, 4, 4, '#ffffff');
+                let riverGrad = ctx.createLinearGradient(0, 160, 0, 300);
+                riverGrad.addColorStop(0, '#1e40af');
+                riverGrad.addColorStop(1, '#1e3a8a');
+                ctx.fillStyle = riverGrad;
+                ctx.fillRect(0, 160, 300, 140);
 
-                // 유성 애니메이션
+                // 달과 별
+                ctx.fillStyle = '#fef08a';
+                ctx.beginPath();
+                ctx.arc(240, 35, 16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(40, 30, 3, 3);
+                ctx.fillRect(110, 20, 2, 2);
+                ctx.fillRect(180, 50, 3, 3);
+
+                // 유성
                 if (Math.random() < 0.05 && !gameState.shootingStar.active) {
-                    gameState.shootingStar = { x: 50 + Math.random()*150, y: 10, active: true };
+                    gameState.shootingStar = { x: 40 + Math.random()*160, y: 10, active: true };
                 }
                 if (gameState.shootingStar.active) {
-                    drawPixelRect(gameState.shootingStar.x, gameState.shootingStar.y, 12, 3, '#ffffff');
+                    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(gameState.shootingStar.x, gameState.shootingStar.y);
+                    ctx.lineTo(gameState.shootingStar.x + 15, gameState.shootingStar.y + 10);
+                    ctx.stroke();
                     gameState.shootingStar.x += 6;
-                    gameState.shootingStar.y += 3;
+                    gameState.shootingStar.y += 4;
                     if (gameState.shootingStar.y > 100) gameState.shootingStar.active = false;
                 }
 
-                drawPixelRect(0, 120, 280, 20, '#636e72');
-                drawPixelRect(50, 80, 15, 40, '#b2bec3');
-                drawPixelRect(180, 80, 15, 40, '#b2bec3');
+                // 한강대교 트러스 구조물
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(-10, 140, 320, 20);
+                ctx.beginPath();
+                ctx.moveTo(30, 140); ctx.lineTo(60, 100); ctx.lineTo(90, 140);
+                ctx.moveTo(150, 140); ctx.lineTo(180, 100); ctx.lineTo(210, 140);
+                ctx.stroke();
 
-                drawPixelRect(gameState.player.x, gameState.player.y, 50, 28, '#fdcb6e');
-                drawPixelRect(gameState.player.x+32, gameState.player.y-14, 18, 20, '#fdcb6e');
-                drawPixelRect(gameState.player.x+46, gameState.player.y-6, 12, 8, '#e17055');
-                drawBigCharacter(gameState.player.x+10, gameState.player.y-12, true);
+                // 오리배
+                ctx.fillStyle = '#facc15';
+                ctx.beginPath();
+                ctx.arc(gameState.player.x+20, gameState.player.y+15, 20, 0, Math.PI);
+                ctx.fill();
+                ctx.fillRect(gameState.player.x+25, gameState.player.y-5, 14, 20);
+                ctx.fillStyle = '#f97316';
+                ctx.fillRect(gameState.player.x+39, gameState.player.y, 10, 8);
+
+                drawDetailedCharacter(gameState.player.x+5, gameState.player.y-10, true);
 
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 16px "Apple SD Gothic Neo"';
-                ctx.fillText("A버튼 연타로 노 젓기! 🛶", 55, 30);
+                ctx.font = '20px "Gamja Flower"';
+                ctx.fillText("A버튼 연타로 밤 한강 노젓기! 🛶", 55, 30);
                 break;
 
             case 2:
-                drawPixelRect(0, 0, 280, 280, '#fab1a0');
-                drawPixelRect(0, 160, 280, 120, '#e17055');
+                // 2. 생활반 & 디테일 관물대 (원목 바닥, 벽지, 패딩, 에어팟, 커플사진)
+                ctx.fillStyle = '#fef3c7';
+                ctx.fillRect(0, 0, 300, 170); // 벽
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(0, 170, 300, 130); // 나무바닥
 
-                drawPixelRect(30, 40, 65, 110, '#636e72');
-                drawPixelRect(35, 45, 55, 100, '#b2bec3');
+                // 바닥 결
+                ctx.strokeStyle = '#78350f';
+                ctx.lineWidth = 1;
+                for(let i=170; i<300; i+=25) {
+                    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(300, i); ctx.stroke();
+                }
 
-                // 폴라로이드 커플 사진 디테일
-                drawPixelRect(42, 60, 40, 40, '#ffffff');
-                drawPixelRect(47, 65, 30, 25, '#ff7675');
+                // 관물대 1 (좌측)
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(20, 30, 80, 130);
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(25, 35, 70, 120);
 
-                drawPixelRect(180, 40, 65, 110, '#636e72');
-                drawPixelRect(185, 45, 55, 100, '#b2bec3');
-                drawPixelRect(190, 110, 45, 30, '#d63031');
+                // 관물대 2 (우측 - 명찰 위치!)
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(190, 30, 80, 130);
+                ctx.fillStyle = '#f1f5f9';
+                ctx.fillRect(195, 35, 70, 120);
 
-                ctx.fillStyle = '#2d3436';
-                ctx.font = 'bold 16px "Apple SD Gothic Neo"';
-                ctx.fillText("[ 생활반 관물대 서랍 탐색 ]", 50, 30);
+                // 걸려있는 롱패딩과 군복
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(35, 55, 22, 50); // 롱패딩
+                ctx.fillStyle = '#15803d';
+                ctx.fillRect(62, 55, 22, 45); // 군복
 
-                drawBigCharacter(gameState.player.x, gameState.player.y, true);
+                // 서랍 위 에어팟
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(205, 50, 12, 10);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(208, 52, 6, 3);
+
+                // 커플 액자 사진
+                ctx.fillStyle = '#fbcfe8';
+                ctx.fillRect(225, 45, 25, 20);
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = '10px sans-serif';
+                ctx.fillText("♥", 233, 58);
+
+                // 명찰 서랍
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(200, 115, 60, 30);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '12px "Gowun Dodum"';
+                ctx.fillText("명찰함", 212, 134);
+
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '20px "Gamja Flower"';
+                ctx.fillText("[ 관물대 서랍 탐색 ]", 85, 25);
+
+                drawDetailedCharacter(gameState.player.x, gameState.player.y, true);
                 break;
 
             case 3:
-                drawPixelRect(0, 0, 280, 280, '#74b9ff');
-                drawPixelRect(0, 180, 280, 100, '#55efc4');
+                // 3. 첫 데이트 구름 표지판
+                let sky3 = ctx.createLinearGradient(0, 0, 0, 300);
+                sky3.addColorStop(0, '#38bdf8');
+                sky3.addColorStop(1, '#bae6fd');
+                ctx.fillStyle = sky3;
+                ctx.fillRect(0, 0, 300, 300);
 
-                ctx.fillStyle = '#2d3436';
-                ctx.font = 'bold 16px "Apple SD Gothic Neo"';
-                ctx.fillText("Q. 우리의 첫 데이트 장소는?", 40, 35);
+                ctx.fillStyle = '#4ade80';
+                ctx.fillRect(0, 190, 300, 110);
+
+                ctx.fillStyle = '#1e293b';
+                ctx.font = 'bold 20px "Gamja Flower"';
+                ctx.fillText("Q. 우리의 첫 데이트 장소는?", 50, 35);
 
                 const drawCloudBtn = (x, y, text) => {
-                    drawPixelRect(x, y, 100, 50, '#ffffff');
-                    drawPixelRect(x+5, y+5, 90, 40, '#ffeaa7');
-                    ctx.fillStyle = '#2d3436';
-                    ctx.font = 'bold 15px "Apple SD Gothic Neo"';
-                    ctx.fillText(text, x+20, y+30);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(x+20, y+20, 20, 0, Math.PI*2);
+                    ctx.arc(x+50, y+15, 25, 0, Math.PI*2);
+                    ctx.arc(x+80, y+20, 20, 0, Math.PI*2);
+                    ctx.fill();
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = 'bold 18px "Gamja Flower"';
+                    ctx.fillText(text, x+25, y+25);
                 };
 
                 drawCloudBtn(20, 60, "1. 서현");
-                drawCloudBtn(150, 60, "2. 야탑");
-                drawCloudBtn(20, 120, "3. 시내");
-                drawCloudBtn(150, 120, "4. 판교");
+                drawCloudBtn(160, 60, "2. 야탑");
+                drawCloudBtn(20, 125, "3. 시내");
+                drawCloudBtn(160, 125, "4. 판교");
 
-                drawBigCharacter(gameState.player.x, gameState.player.y, true);
+                drawDetailedCharacter(gameState.player.x, gameState.player.y, true);
                 break;
 
             case 4:
-                drawPixelRect(0, 0, 280, 280, '#2d3436');
-                drawPixelRect(0, 200, 280, 80, '#00b894');
+                // 4. 서희 놀이터 (밤 놀이터, 미끄럼틀, 시소, 기둥 뒤 숨은 예서)
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, 300, 300);
+                ctx.fillStyle = '#16a34a';
+                ctx.fillRect(0, 210, 300, 90);
 
-                // 은은한 가로등 후광 조명 연출
-                drawPixelRect(35, 120, 40, 80, 'rgba(255, 234, 167, 0.25)');
-                drawPixelRect(50, 110, 10, 90, '#ffeaa7');
+                // 가로등 조명
+                ctx.fillStyle = 'rgba(254, 240, 138, 0.2)';
+                ctx.beginPath();
+                ctx.arc(50, 120, 50, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = '#fef08a';
+                ctx.fillRect(45, 110, 10, 100);
 
-                drawPixelRect(150, 80, 15, 120, '#d63031');
-                drawPixelRect(165, 110, 70, 90, '#fdcb6e');
+                // 미끄럼틀 타워 구조물
+                ctx.fillStyle = '#ef4444'; // 지붕
+                ctx.beginPath();
+                ctx.moveTo(215, 60); ctx.lineTo(170, 90); ctx.lineTo(260, 90); ctx.fill();
+                ctx.fillStyle = '#f59e0b'; // 미끄럼틀 계단
+                ctx.fillRect(180, 90, 70, 120);
 
-                drawBigCharacter(195, 80, false);
-                drawPixelRect(185, 75, 40, 120, 'rgba(253, 203, 110, 0.95)');
+                // ★ 미끄럼틀 뒤에 숨은 예서 (머리칼 일부만 빼꼼!) ★
+                drawDetailedCharacter(218, 90, false);
+                // 기둥으로 일부 가리기
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(205, 85, 22, 125); 
+
+                // 미끄럼틀 슬라이드
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath();
+                ctx.moveTo(180, 130); ctx.lineTo(130, 210); ctx.lineTo(150, 210); ctx.lineTo(195, 130); ctx.fill();
 
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 16px "Apple SD Gothic Neo"';
-                ctx.fillText("미끄럼틀 뒤 예서를 찾아라! 🌙", 40, 35);
+                ctx.font = '20px "Gamja Flower"';
+                ctx.fillText("미끄럼틀 기둥 뒤 예서를 찾아라! 🌙", 35, 30);
 
-                drawBigCharacter(gameState.player.x, gameState.player.y, true);
+                drawDetailedCharacter(gameState.player.x, gameState.player.y, true);
                 break;
 
             case 5:
-                drawPixelRect(0, 0, 280, 280, '#81ecec');
-                drawPixelRect(10, 10, 260, 260, '#74b9ff');
-                drawPixelRect(20, 20, 240, 240, '#dfe6e9');
+                // 5. 아이스링크 (반짝이는 빙판 + 스케이트 궤적)
+                let iceGrad = ctx.createLinearGradient(0, 0, 300, 300);
+                iceGrad.addColorStop(0, '#a5f3fc');
+                iceGrad.addColorStop(1, '#38bdf8');
+                ctx.fillStyle = iceGrad;
+                ctx.fillRect(0, 0, 300, 300);
 
-                // 스케이트 자국 렌더링
-                gameState.iceTracks.forEach((t, i) => {
-                    drawPixelRect(t.x, t.y, 4, 2, `rgba(255,255,255,${t.alpha})`);
-                    t.alpha -= 0.005;
+                // 스케이트 자국
+                gameState.iceTracks.forEach((t) => {
+                    ctx.fillStyle = `rgba(255,255,255,${t.alpha})`;
+                    ctx.fillRect(t.x, t.y, 4, 3);
+                    t.alpha -= 0.006;
                 });
                 gameState.iceTracks = gameState.iceTracks.filter(t => t.alpha > 0);
 
-                ctx.fillStyle = '#0984e3';
-                ctx.font = 'bold 16px "Apple SD Gothic Neo"';
-                ctx.fillText("⛸️ 미끄러지는 아이스링크장 ⛸️", 40, 45);
+                ctx.fillStyle = '#0369a1';
+                ctx.font = 'bold 20px "Gamja Flower"';
+                ctx.fillText("⛸️ 미끄러지는 아이스링크장 ⛸️", 50, 40);
 
-                drawPixelRect(190, 120, 60, 60, '#ff7675');
+                // 도착지 하트 구역
+                ctx.fillStyle = '#f43f5e';
+                ctx.beginPath();
+                ctx.arc(220, 150, 25, 0, Math.PI*2);
+                ctx.fill();
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 14px "Apple SD Gothic Neo"';
-                ctx.fillText("목적지", 200, 155);
+                ctx.font = '16px "Gamja Flower"';
+                ctx.fillText("목적지", 202, 155);
 
-                drawBigCharacter(gameState.partner.x, gameState.partner.y, false);
-                drawBigCharacter(gameState.player.x, gameState.player.y, true);
+                drawDetailedCharacter(gameState.partner.x, gameState.partner.y, false);
+                drawDetailedCharacter(gameState.player.x, gameState.player.y, true);
                 break;
 
             case 6:
-                drawPixelRect(0, 0, 280, 280, '#ffeaa7');
-                ctx.fillStyle = '#d63031';
-                ctx.font = 'bold 20px "Apple SD Gothic Neo"';
-                ctx.fillText("🎉 진급을 축하합니다! 🎉", 40, 60);
+                // 6. 엔딩 화면 (분홍 벚꽃 흩날림)
+                ctx.fillStyle = '#fef3c7';
+                ctx.fillRect(0, 0, 300, 300);
+                ctx.fillStyle = '#dc2626';
+                ctx.font = 'bold 24px "Gamja Flower"';
+                ctx.fillText("🎉 상병 진급을 축하합니다! 🎉", 30, 65);
 
-                drawBigCharacter(90, 110, true);
-                drawBigCharacter(130, 110, false);
+                drawDetailedCharacter(110, 130, true);
+                drawDetailedCharacter(150, 130, false);
 
-                // 벚꽃잎 내리는 연출 🌸
+                // 벚꽃잎
                 gameState.petals.forEach(p => {
-                    drawPixelRect(p.x, p.y, 6, 6, '#fd79a8');
+                    ctx.fillStyle = '#f43f5e';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+                    ctx.fill();
                     p.y += p.speed;
-                    p.x += Math.sin(p.y / 10);
-                    if (p.y > 280) { p.y = 0; p.x = Math.random() * 280; }
+                    p.x += Math.sin(p.y / 12);
+                    if (p.y > 300) { p.y = 0; p.x = Math.random() * 300; }
                 });
                 break;
         }
@@ -751,4 +939,3 @@
 </script>
 </body>
 </html>
-- [ ] 
