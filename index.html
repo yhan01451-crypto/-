@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>두근두근 예민의 진급</title>
+  <style>
+    :root {
+      --bg-color: #1a1c23;
+      --panel-bg: #2d3142;
+      --accent-color: #ff6b81;
+      --accent-hover: #ff4757;
+      --text-color: #ffffff;
+      --font-pixel: 'DungGeunMo', monospace;
+    }
+
+    @font-face {
+      font-family: 'DungGeunMo';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-pixel), sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 100%;
+      max-height: 852px;
+      background-color: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    }
+
+    /* Top HUD */
+    #hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: env(safe-area-inset-top, 12px) 16px 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 10;
+      font-size: 16px;
+      text-shadow: 2px 2px #000;
+    }
+
+    .stars {
+      color: #ffd15c;
+      font-size: 20px;
+      letter-spacing: 2px;
+    }
+
+    .reset-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 4px 8px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    /* Main Canvas Area */
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #111;
+    }
+
+    canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* Dialogue Overlay */
+    #dialogue-box {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(20, 24, 38, 0.95);
+      border: 3px solid #ffffff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #fff;
+      z-index: 20;
+      display: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    #dialogue-speaker {
+      color: #ff6b81;
+      font-weight: bold;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    /* D-Pad Controls */
+    #controls {
+      height: 180px;
+      background: #181920;
+      border-top: 2px solid #333;
+      padding-bottom: env(safe-area-inset-bottom, 12px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .dpad {
+      position: relative;
+      width: 150px;
+      height: 150px;
+    }
+
+    .dpad-btn {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      background: #343a40;
+      border: 2px solid #6c757d;
+      border-radius: 6px;
+      color: white;
+      font-size: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: inset 0 -3px 0 rgba(0,0,0,0.4);
+    }
+
+    .dpad-btn:active {
+      background: #ff6b81;
+      transform: translateY(2px);
+    }
+
+    .dpad-up { top: 0; left: 51px; }
+    .dpad-down { bottom: 0; left: 51px; }
+    .dpad-left { top: 51px; left: 0; }
+    .dpad-right { top: 51px; right: 0; }
+    .dpad-center { top: 51px; left: 51px; width: 48px; height: 48px; background: #212529; border: none; }
+
+    /* UI Screens (Start, Quiz, Ending) */
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 28, 35, 0.98);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 28px;
+      color: var(--accent-color);
+      margin-bottom: 20px;
+      text-shadow: 2px 2px #000;
+      line-height: 1.3;
+    }
+
+    .btn {
+      background: var(--accent-color);
+      border: 2px solid #fff;
+      color: #fff;
+      padding: 14px 28px;
+      font-size: 18px;
+      font-family: inherit;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 4px 0 #c43e52;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 #c43e52;
+    }
+
+    /* Quiz Layout */
+    .quiz-options {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .quiz-btn {
+      background: #2d3142;
+      border: 2px solid #4f566b;
+      color: #fff;
+      padding: 14px;
+      font-family: inherit;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .quiz-btn:active {
+      background: #4f566b;
+    }
+
+    /* Letter Screen */
+    .letter-card {
+      background: #fff;
+      color: #222;
+      padding: 24px;
+      border-radius: 8px;
+      border: 4px solid #ff6b81;
+      width: 100%;
+      max-height: 70%;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 16px;
+      line-height: 1.8;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .letter-ending {
+      margin-top: 16px;
+      text-align: right;
+      font-weight: bold;
+      color: #ff4757;
+      font-size: 18px;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- Top HUD -->
+    <div id="hud">
+      <div id="stage-title">STAGE 1</div>
+      <div class="stars" id="star-display">☆☆☆☆</div>
+      <button class="reset-btn" id="reset-btn">처음부터</button>
+    </div>
+
+    <!-- Canvas Area -->
+    <div id="canvas-container">
+      <canvas id="gameCanvas" width="320" height="320"></canvas>
+      
+      <!-- Dialogue Box Overlay -->
+      <div id="dialogue-box">
+        <div id="dialogue-speaker">예서</div>
+        <div id="dialogue-text">...</div>
+      </div>
+    </div>
+
+    <!-- D-Pad Controls -->
+    <div id="controls">
+      <div class="dpad">
+        <button class="dpad-btn dpad-up" id="btn-up">▲</button>
+        <button class="dpad-btn dpad-left" id="btn-left">◀</button>
+        <div class="dpad-btn dpad-center"></div>
+        <button class="dpad-btn dpad-right" id="btn-right">▶</button>
+        <button class="dpad-btn dpad-down" id="btn-down">▼</button>
+      </div>
+    </div>
+
+    <!-- Start Overlay -->
+    <div id="start-screen" class="screen">
+      <div class="title">두근두근 예민의 진급</div>
+      <p style="color: #aaa; margin-bottom: 30px; line-height: 1.6;">
+        예서가 선물하는<br>상병 진급 축하 기념 게임!
+      </p>
+      <button class="btn" id="start-btn">게임 시작하기</button>
+    </div>
+
+    <!-- Quiz Overlay (Stage 3) -->
+    <div id="quiz-screen" class="screen hidden">
+      <div style="color: #ff6b81; font-size: 16px; margin-bottom: 10px;">STAGE 3 : 커플 퀴즈</div>
+      <div id="quiz-question" style="font-size: 20px; margin-bottom: 10px; line-height: 1.4;">우리의 첫 데이트 장소는?</div>
+      <div class="quiz-options" id="quiz-options"></div>
+      <div id="quiz-feedback" style="margin-top: 15px; color: #ff4757; min-height: 24px;"></div>
+    </div>
+
+    <!-- Ending Overlay -->
+    <div id="ending-screen" class="screen hidden">
+      <div class="title" style="font-size: 24px;">🎉 상병 진급을 축하해! 🎉</div>
+      <div class="letter-card">
+        <div id="letter-content">9개월 동안 고생 많았어!! 전역까지 기다릴게</div>
+        <div class="letter-ending" id="letter-sign">사랑해</div>
+      </div>
+      <button class="btn" id="restart-btn" style="margin-top: 20px;">다시 하기</button>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       1. GAME CONSTANTS & STATE (데이터 바인딩 및 상태 관리)
+       ========================================================================== */
+    const CONFIG = {
+      giver: "예서",
+      receiver: "예민",
+      title: "두근두근 예민의 진급",
+      quiz: {
+        question: "우리의 첫 데이트 장소는?",
+        answer: "야탑",
+        options: ["서현", "시내", "야탑", "판교"]
+      },
+      letter: "9개월 동안 고생 많았어!! 전역까지 기다릴게",
+      endingSign: "사랑해"
+    };
+
+    let gameState = {
+      stage: 1,
+      stars: 0,
+      player: { x: 5, y: 5, dir: 'down' },
+      stage1Complete: false,
+      stage2ItemsExamined: new Set(),
+      stage4Found: false
+    };
+
+    /* ==========================================================================
+       2. AUDIO SYNTHESIS (Web Audio API - BGM & SFX)
+       ========================================================================== */
+    class SoundSystem {
+      constructor() {
+        this.ctx = null;
+        this.bgmTimer = null;
+        this.isMuted = false;
+        this.bgmStep = 0;
+      }
+
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, duration, type = 'square', volume = 0.1) {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.00001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch(e){}
+      }
+
+      playSFX(type) {
+        this.init();
+        if (type === 'step') {
+          this.playTone(150, 0.05, 'triangle', 0.05);
+        } else if (type === 'star') {
+          const now = this.ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            setTimeout(() => this.playTone(freq, 0.15, 'sine', 0.15), idx * 80);
+          });
+        } else if (type === 'wrong') {
+          this.playTone(180, 0.2, 'sawtooth', 0.15);
+        } else if (type === 'correct') {
+          this.playTone(587.33, 0.1, 'square', 0.1);
+          setTimeout(() => this.playTone(880, 0.2, 'square', 0.1), 100);
+        }
+      }
+
+      startBGM() {
+        this.init();
+        if (this.bgmTimer) return;
+        
+        const notes = [
+          261.63, 329.63, 392.00, 523.25, 392.00, 329.63,
+          293.66, 349.23, 440.00, 587.33, 440.00, 349.23,
+          329.63, 392.00, 523.25, 659.25, 523.25, 392.00,
+          392.00, 349.23, 329.63, 293.66
+        ];
+
+        this.bgmTimer = setInterval(() => {
+          if (!this.isMuted) {
+            const note = notes[this.bgmStep % notes.length];
+            this.playTone(note, 0.18, 'triangle', 0.03);
+            this.bgmStep++;
+          }
+        }, 250);
+      }
+    }
+
+    const audio = new SoundSystem();
+
+    /* ==========================================================================
+       3. CANVAS PIXEL ART RENDERER
+       ========================================================================== */
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const TILE = 32;
+    const GRID_SIZE = 10;
+
+    function drawTile(x, y, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x * TILE, y * TILE, TILE, TILE);
+    }
+
+    function drawGridBackground(floorColor, gridColor) {
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          drawTile(c, r, (r + c) % 2 === 0 ? floorColor : gridColor);
+        }
+      }
+    }
+
+    function drawPlayer(x, y, dir) {
+      const px = x * TILE;
+      const py = y * TILE;
+
+      ctx.fillStyle = '#e63946';
+      ctx.fillRect(px + 8, py + 14, 16, 12);
+
+      ctx.fillStyle = '#4a5759';
+      ctx.fillRect(px + 8, py + 24, 16, 6);
+
+      ctx.fillStyle = '#ffdbac';
+      ctx.fillRect(px + 8, py + 4, 16, 12);
+
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(px + 8, py + 2, 16, 5);
+
+      ctx.fillStyle = '#000';
+      if (dir === 'left') {
+        ctx.fillRect(px + 9, py + 8, 3, 3);
+      } else if (dir === 'right') {
+        ctx.fillRect(px + 20, py + 8, 3, 3);
+      } else {
+        ctx.fillRect(px + 10, py + 8, 3, 3);
+        ctx.fillRect(px + 19, py + 8, 3, 3);
+      }
+    }
+
+    function drawNPC(x, y) {
+      const px = x * TILE;
+      const py = y * TILE;
+
+      ctx.fillStyle = '#ff85a1';
+      ctx.fillRect(px + 8, py + 14, 16, 12);
+
+      ctx.fillStyle = '#f72585';
+      ctx.fillRect(px + 7, py + 22, 18, 8);
+
+      ctx.fillStyle = '#ffdbac';
+      ctx.fillRect(px + 8, py + 6, 16, 10);
+
+      ctx.fillStyle = '#5c3d2e';
+      ctx.fillRect(px + 6, py + 3, 20, 6);
+      ctx.fillRect(px + 5, py + 8, 4, 10);
+      ctx.fillRect(px + 23, py + 8, 4, 10);
+
+      ctx.fillStyle = '#000';
+      ctx.fillRect(px + 10, py + 10, 2, 3);
+      ctx.fillRect(px + 20, py + 10, 2, 3);
+    }
+
+    function drawDuckBoat(x, y) {
+      const px = x * TILE;
+      const py = y * TILE;
+      ctx.fillStyle = '#ffb703';
+      ctx.fillRect(px + 4, py + 10, 24, 16);
+      ctx.fillRect(px + 18, py + 4, 10, 10);
+      ctx.fillStyle = '#fb8500';
+      ctx.fillRect(px + 26, py + 8, 6, 4);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(px + 22, py + 6, 2, 2);
+    }
+
+    function drawItemSprite(type, x, y) {
+      const px = x * TILE;
+      const py = y * TILE;
+
+      if (type === '명찰') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(px + 6, py + 10, 20, 12);
+        ctx.fillStyle = '#d90429';
+        ctx.fillRect(px + 8, py + 12, 16, 8);
+      } else if (type === '복권') {
+        ctx.fillStyle = '#ffd166';
+        ctx.fillRect(px + 8, py + 6, 16, 20);
+        ctx.fillStyle = '#ef476f';
+        ctx.fillRect(px + 11, py + 9, 10, 6);
+      } else if (type === '에어팟') {
+        ctx.fillStyle = '#f8f9fa';
+        ctx.fillRect(px + 10, py + 8, 12, 14);
+        ctx.fillStyle = '#adb5bd';
+        ctx.fillRect(px + 10, py + 14, 12, 2);
+      } else if (type === '패딩') {
+        ctx.fillStyle = '#2b2d42';
+        ctx.fillRect(px + 6, py + 6, 20, 22);
+        ctx.fillStyle = '#8d99ae';
+        ctx.fillRect(px + 14, py + 6, 4, 22);
+      } else if (type === '이빨공룡') {
+        ctx.fillStyle = '#06d6a0';
+        ctx.fillRect(px + 6, py + 8, 20, 18);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(px + 10, py + 16, 4, 4);
+        ctx.fillRect(px + 18, py + 16, 4, 4);
+      } else if (type === '따개비') {
+        ctx.fillStyle = '#6c757d';
+        ctx.fillRect(px + 8, py + 12, 16, 14);
+        ctx.fillStyle = '#343a40';
+        ctx.fillRect(px + 12, py + 10, 8, 6);
+      } else if (type === '눈사람') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(px + 16, py + 22, 8, 0, Math.PI * 2);
+        ctx.arc(px + 16, py + 12, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(px + 15, py + 12, 5, 2);
+      } else if (type === '나무') {
+        ctx.fillStyle = '#6c584c';
+        ctx.fillRect(px + 12, py + 18, 8, 12);
+        ctx.fillStyle = '#55a630';
+        ctx.fillRect(px + 4, py + 4, 24, 16);
+      }
+    }
+
+    /* ==========================================================================
+       4. STAGE RENDERERS & LOGIC
+       ========================================================================== */
+    function renderStage1() {
+      drawGridBackground('#0077b6', '#0096c7');
+      drawDuckBoat(7, 2);
+      drawNPC(6, 2);
+      drawPlayer(gameState.player.x, gameState.player.y, gameState.player.dir);
+    }
+
+    const stage2Items = [
+      { name: "명찰", x: 2, y: 2, isCorrect: true, msg: "우리의 추억이 담긴 명찰이다!" },
+      { name: "복권", x: 7, y: 2, isCorrect: false, msg: "소소하게 살며 대박을 꿈꾸던 복권!" },
+      { name: "에어팟", x: 2, y: 7, isCorrect: false, msg: "같이 노래 들을 때 쓰던 에어팟!" },
+      { name: "패딩", x: 7, y: 7, isCorrect: false, msg: "추운 날 따뜻하게 입었던 패딩!" }
+    ];
+
+    function renderStage2() {
+      drawGridBackground('#e9ecef', '#dee2e6');
+      stage2Items.forEach(item => {
+        drawItemSprite(item.name, item.x, item.y);
+      });
+      drawPlayer(gameState.player.x, gameState.player.y, gameState.player.dir);
+    }
+
+    const stage4Objects = [
+      { name: "이빨공룡", x: 2, y: 2, isCorrect: false, msg: "귀여운 별명 이빨공룡 인형이다!" },
+      { name: "따개비", x: 7, y: 2, isCorrect: false, msg: "둘만의 별명 따개비 장식이다!" },
+      { name: "눈사람", x: 2, y: 7, isCorrect: true, msg: "첫눈 올 때 함께 만들어 더 특별했던 눈사람이다!" },
+      { name: "나무", x: 7, y: 7, isCorrect: false, msg: "평범한 장식용 나무다." }
+    ];
+
+    function renderStage4() {
+      drawGridBackground('#a7c957', '#6a994ed0');
+      stage4Objects.forEach(obj => {
+        drawItemSprite(obj.name, obj.x, obj.y);
+      });
+      drawPlayer(gameState.player.x, gameState.player.y, gameState.player.dir);
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      if (gameState.stage === 1) renderStage1();
+      else if (gameState.stage === 2) renderStage2();
+      else if (gameState.stage === 4) renderStage4();
+
+      updateHUD();
+    }
+
+    /* ==========================================================================
+       5. GAME LOGIC & MOVEMENT
+       ========================================================================== */
+    function updateHUD() {
+      document.getElementById('stage-title').innerText = `STAGE ${gameState.stage}`;
+      let starStr = '';
+      for (let i = 0; i < 4; i++) {
+        starStr += i < gameState.stars ? '★' : '☆';
+      }
+      document.getElementById('star-display').innerText = starStr;
+    }
+
+    function showDialogue(speaker, text, duration = 3000) {
+      const box = document.getElementById('dialogue-box');
+      document.getElementById('dialogue-speaker').innerText = speaker;
+      document.getElementById('dialogue-text').innerText = text;
+      box.style.display = 'block';
+
+      if (window.dialogueTimer) clearTimeout(window.dialogueTimer);
+      window.dialogueTimer = setTimeout(() => {
+        box.style.display = 'none';
+      }, duration);
+    }
+
+    function addStar() {
+      if (gameState.stars < gameState.stage) {
+        gameState.stars++;
+        audio.playSFX('star');
+        saveProgress();
+      }
+    }
+
+    function movePlayer(dx, dy, dir) {
+      gameState.player.dir = dir;
+      const nextX = gameState.player.x + dx;
+      const nextY = gameState.player.y + dy;
+
+      if (nextX < 0 || nextX >= GRID_SIZE || nextY < 0 || nextY >= GRID_SIZE) return;
+
+      gameState.player.x = nextX;
+      gameState.player.y = nextY;
+      audio.playSFX('step');
+
+      checkCollisions();
+      render();
+      saveProgress();
+    }
+
+    function checkCollisions() {
+      const { x, y } = gameState.player;
+
+      // STAGE 1 : 오리배(7,2) 또는 NPC(6,2) 도달 미션
+      if (gameState.stage === 1 && !gameState.stage1Complete) {
+        if ((x === 7 && y === 2) || (x === 6 && y === 2)) {
+          gameState.stage1Complete = true;
+          addStar();
+          showDialogue("예서", "한강에서 오리배 탈때 오빠가 노래 불러줘서 정말 행복했어", 4000);
+          
+          setTimeout(() => {
+            nextStage(2);
+          }, 3500);
+        }
+      }
+
+      // STAGE 2 : 명찰(정답) 찾기
+      if (gameState.stage === 2) {
+        stage2Items.forEach(item => {
+          if (x === item.x && y === item.y) {
+            showDialogue("예민", item.msg, 2500);
+            if (item.isCorrect && gameState.stars < 2) {
+              addStar();
+              setTimeout(() => {
+                nextStage(3);
+              }, 2500);
+            }
+          }
+        });
+      }
+
+      // STAGE 4 : 첫눈 올 때 눈사람 만든 사건 오브젝트(정답) 찾기
+      if (gameState.stage === 4) {
+        stage4Objects.forEach(obj => {
+          if (x === obj.x && y === obj.y) {
+            showDialogue("예민", obj.msg, 3000);
+            if (obj.isCorrect && gameState.stars < 4) {
+              addStar();
+              setTimeout(() => {
+                showEnding();
+              }, 3000);
+            }
+          }
+        });
+      }
+    }
+
+    function nextStage(targetStage) {
+      gameState.stage = targetStage;
+      gameState.player = { x: 1, y: 5, dir: 'right' };
+
+      if (targetStage === 3) {
+        showQuizScreen();
+      } else {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        render();
+      }
+      saveProgress();
+    }
+
+    /* ==========================================================================
+       6. STAGE 3 (QUIZ) & ENDING LOGIC
+       ========================================================================== */
+    function showQuizScreen() {
+      const quizScreen = document.getElementById('quiz-screen');
+      const optionsContainer = document.getElementById('quiz-options');
+      const feedback = document.getElementById('quiz-feedback');
+      
+      feedback.innerText = '';
+      optionsContainer.innerHTML = '';
+
+      CONFIG.quiz.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn';
+        btn.innerText = opt;
+        btn.onclick = () => handleQuizAnswer(opt);
+        optionsContainer.appendChild(btn);
+      });
+
+      quizScreen.classList.remove('hidden');
+    }
+
+    function handleQuizAnswer(selected) {
+      const feedback = document.getElementById('quiz-feedback');
+      if (selected === CONFIG.quiz.answer) {
+        audio.playSFX('correct');
+        feedback.style.color = '#2ec4b6';
+        feedback.innerText = "정답입니다!";
+        addStar();
+        
+        setTimeout(() => {
+          document.getElementById('quiz-screen').classList.add('hidden');
+          nextStage(4);
+        }, 1500);
+      } else {
+        audio.playSFX('wrong');
+        feedback.style.color = '#ff4757';
+        feedback.innerText = "땡! 다시 생각해봐";
+      }
+    }
+
+    function showEnding() {
+      document.getElementById('ending-screen').classList.remove('hidden');
+      audio.playSFX('star');
+    }
+
+    /* ==========================================================================
+       7. LOCALSTORAGE & PROGRESS SYSTEM
+       ========================================================================== */
+    function saveProgress() {
+      localStorage.setItem('yeemin_game_state', JSON.stringify(gameState));
+    }
+
+    function loadProgress() {
+      const saved = localStorage.getItem('yeemin_game_state');
+      if (saved) {
+        try {
+          gameState = JSON.parse(saved);
+        } catch(e) {}
+      }
+    }
+
+    function resetGame() {
+      localStorage.removeItem('yeemin_game_state');
+      gameState = {
+        stage: 1,
+        stars: 0,
+        player: { x: 1, y: 5, dir: 'right' },
+        stage1Complete: false,
+        stage2ItemsExamined: new Set(),
+        stage4Found: false
+      };
+      document.getElementById('ending-screen').classList.add('hidden');
+      document.getElementById('quiz-screen').classList.add('hidden');
+      document.getElementById('start-screen').classList.add('hidden');
+      render();
+    }
+
+    /* ==========================================================================
+       8. CONTROLS & EVENT LISTENERS
+       ========================================================================== */
+    function setupControls() {
+      const bindBtn = (id, dx, dy, dir) => {
+        const btn = document.getElementById(id);
+        const handlePress = (e) => {
+          e.preventDefault();
+          movePlayer(dx, dy, dir);
+        };
+        btn.addEventListener('touchstart', handlePress, { passive: false });
+        btn.addEventListener('click', handlePress);
+      };
+
+      bindBtn('btn-up', 0, -1, 'up');
+      bindBtn('btn-down', 0, 1, 'down');
+      bindBtn('btn-left', -1, 0, 'left');
+      bindBtn('btn-right', 1, 0, 'right');
+
+      window.addEventListener('keydown', (e) => {
+        if (gameState.stage === 3) return;
+        if (e.key === 'ArrowUp') movePlayer(0, -1, 'up');
+        if (e.key === 'ArrowDown') movePlayer(0, 1, 'down');
+        if (e.key === 'ArrowLeft') movePlayer(-1, 0, 'left');
+        if (e.key === 'ArrowRight') movePlayer(1, 0, 'right');
+      });
+
+      document.getElementById('start-btn').addEventListener('click', () => {
+        audio.startBGM();
+        document.getElementById('start-screen').classList.add('hidden');
+        if (gameState.stage === 3) showQuizScreen();
+        else if (gameState.stage === 5) showEnding();
+        else render();
+      });
+
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        if (confirm("게임을 처음부터 다시 시작할까요?")) {
+          resetGame();
+        }
+      });
+
+      document.getElementById('restart-btn').addEventListener('click', () => {
+        resetGame();
+      });
+    }
+
+    /* ==========================================================================
+       9. INITIALIZATION
+       ========================================================================== */
+    window.addEventListener('load', () => {
+      loadProgress();
+      setupControls();
+      render();
+    });
+  </script>
+</body>
+</html>
