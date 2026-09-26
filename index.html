@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>예민의 진급 스토리</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Gamja+Flower&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gb-body: #8a8880;
+            --gb-body-dark: #6e6c65;
+            --gb-screen-frame: #2c2c28;
+            --btn-dark: #2c2c28;
+            --btn-red: #7c2d2d;
+            --btn-red-dark: #521d1d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Gamja Flower', cursive, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 참고 이미지의 차분한 그레이 레트로 게임보이 본체 */
+        .gameboy-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 420px;
+            max-height: 880px;
+            background: linear-gradient(145deg, #a09e95, #7a7870);
+            border-radius: 24px;
+            padding: 20px 18px 25px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            border: 2px solid #b5b3aa;
+        }
+
+        /* 프레임 및 화면 영역 */
+        .screen-frame {
+            width: 100%;
+            height: 60%;
+            background: var(--gb-screen-frame);
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .screen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #dcd8c0;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 11px;
+            margin-bottom: 8px;
+            padding: 0 4px;
+        }
+
+        .star-display {
+            color: #f3ce5c;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            flex-grow: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #1a1a16;
+            background-color: #8fa255;
+        }
+
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        /* 픽셀 손글씨 대화창 */
+        .dialog-box {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 94%;
+            background: rgba(30, 30, 26, 0.92);
+            border: 2px solid #dcd8c0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 16px;
+            color: #f0ece0;
+            line-height: 1.3;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 30;
+        }
+
+        .dialog-next {
+            text-align: right;
+            font-size: 12px;
+            color: #f3ce5c;
+            margin-top: 4px;
+        }
+
+        /* 하단 조작부 (참고 이미지 컨트롤러와 동일) */
+        .controller-area {
+            width: 100%;
+            height: 36%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .dpad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 48px);
+            grid-template-rows: repeat(3, 48px);
+            gap: 2px;
+        }
+
+        .dpad-btn {
+            background: #2b2b27;
+            border: none;
+            cursor: pointer;
+            box-shadow: inset 0 2px 0 #4a4a44, 0 4px 0 #181816;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #8a8880;
+            font-size: 12px;
+        }
+
+        .dpad-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 1px 0 #4a4a44, 0 2px 0 #181816;
+            background: #1e1e1b;
+        }
+
+        .dpad-up { grid-column: 2; grid-row: 1; border-radius: 8px 8px 2px 2px; }
+        .dpad-left { grid-column: 1; grid-row: 2; border-radius: 8px 2px 2px 8px; }
+        .dpad-center { grid-column: 2; grid-row: 2; background: #2b2b27; box-shadow: none; }
+        .dpad-right { grid-column: 3; grid-row: 2; border-radius: 2px 8px 8px 2px; }
+        .dpad-down { grid-column: 2; grid-row: 3; border-radius: 2px 2px 8px 8px; }
+
+        .btn-a-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+        }
+
+        .btn-a {
+            width: 80px;
+            height: 80px;
+            background: var(--btn-red);
+            border-radius: 50%;
+            border: 3px solid var(--btn-red-dark);
+            color: #dcd8c0;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 3px 0 #a24343, 0 6px 0 #3a1313;
+            cursor: pointer;
+        }
+
+        .btn-a:active {
+            transform: translateY(4px);
+            box-shadow: inset 0 1px 0 #a24343, 0 2px 0 #3a1313;
+        }
+    </style>
+</head>
+<body>
+
+<div class="gameboy-container">
+    <div class="screen-frame">
+        <div class="screen-header">
+            <span>♪</span>
+            <span class="star-display" id="star-display">★ 0 / 5</span>
+        </div>
+        <div class="canvas-wrapper">
+            <canvas id="game-canvas" width="300" height="300"></canvas>
+            <div id="dialog" class="dialog-box">
+                <div id="dialog-text">대화 내용이 출력됩니다.</div>
+                <div class="dialog-next">[ A 누르기 ]</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controller-area">
+        <div class="dpad-grid">
+            <div class="dpad-btn dpad-up" onclick="handleInput('UP')">▲</div>
+            <div class="dpad-btn dpad-left" onclick="handleInput('LEFT')">◄</div>
+            <div class="dpad-btn dpad-center"></div>
+            <div class="dpad-btn dpad-right" onclick="handleInput('RIGHT')">►</div>
+            <div class="dpad-btn dpad-down" onclick="handleInput('DOWN')">▼</div>
+        </div>
+        <div class="btn-a-container">
+            <div class="btn-a" onclick="handleInput('A')">A</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    const dialogBox = document.getElementById('dialog');
+    const dialogText = document.getElementById('dialog-text');
+    const starDisplay = document.getElementById('star-display');
+
+    let audioCtx = null;
+    let bgmStarted = false;
+
+    function initBGM() {
+        if (bgmStarted) return;
+        bgmStarted = true;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 329.63, 293.66];
+        let noteIdx = 0;
+
+        function playLoop() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(notes[noteIdx], audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+            noteIdx = (noteIdx + 1) % notes.length;
+            setTimeout(playLoop, 400);
+        }
+        playLoop();
+    }
+
+    function playSound(freq = 440) {
+        if (!audioCtx) return;
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.value = freq;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+            osc.stop(audioCtx.currentTime + 0.1);
+        } catch(e) {}
+    }
+
+    let gameState = {
+        stage: 0,
+        stars: 0,
+        player: { x: 135, y: 160 },
+        partner: { x: 135, y: 80 },
+        dialogIndex: 0,
+        dialogList: [],
+        popupItem: null,
+        
+        // 전환 애니메이션
+        transitionAlpha: 0,
+        transitioning: false,
+        transitionCallback: null,
+
+        // 엔딩 슬라이드
+        albumIndex: 0,
+        albumTimer: 0
+    };
+
+    function startStageTransition(onMidpoint) {
+        if (gameState.transitioning) return;
+        gameState.transitioning = true;
+        gameState.transitionAlpha = 0;
+        gameState.transitionCallback = onMidpoint;
+    }
+
+    function updateTransition() {
+        if (!gameState.transitioning) return;
+
+        if (gameState.transitionCallback) {
+            gameState.transitionAlpha += 0.08;
+            if (gameState.transitionAlpha >= 1) {
+                gameState.transitionAlpha = 1;
+                gameState.transitionCallback();
+                gameState.transitionCallback = null;
+            }
+        } else {
+            gameState.transitionAlpha -= 0.08;
+            if (gameState.transitionAlpha <= 0) {
+                gameState.transitionAlpha = 0;
+                gameState.transitioning = false;
+            }
+        }
+    }
+
+    function drawTransition() {
+        if (gameState.transitionAlpha <= 0) return;
+        ctx.fillStyle = `rgba(28, 28, 24, ${gameState.transitionAlpha})`;
+        ctx.fillRect(0, 0, 300, 300);
+
+        // 픽셀 나뭇잎 아이콘
+        ctx.save();
+        ctx.globalAlpha = gameState.transitionAlpha;
+        ctx.fillStyle = '#689f38';
+        ctx.fillRect(140, 140, 20, 20);
+        ctx.fillRect(135, 145, 30, 10);
+        ctx.restore();
+    }
+
+    function triggerPopup(itemType, callback) {
+        gameState.popupItem = itemType;
+        gameState.popupCallback = callback;
+        playSound(660);
+    }
+
+    function updateStarDisplay() {
+        starDisplay.innerText = `★ ${gameState.stars} / 5`;
+    }
+
+    function showDialog(lines, onComplete) {
+        gameState.dialogList = lines;
+        gameState.dialogIndex = 0;
+        gameState.onDialogComplete = onComplete;
+        dialogText.innerText = gameState.dialogList[0];
+        dialogBox.style.display = 'block';
+    }
+
+    function handleInput(type) {
+        initBGM();
+        playSound(type === 'A' ? 587 : 349);
+
+        if (gameState.transitioning) return;
+
+        if (gameState.popupItem) {
+            if (type === 'A') {
+                gameState.popupItem = null;
+                if (gameState.popupCallback) gameState.popupCallback();
+            }
+            return;
+        }
+
+        if (dialogBox.style.display === 'block') {
+            if (type === 'A') {
+                gameState.dialogIndex++;
+                if (gameState.dialogIndex < gameState.dialogList.length) {
+                    dialogText.innerText = gameState.dialogList[gameState.dialogIndex];
+                } else {
+                    dialogBox.style.display = 'none';
+                    if (gameState.onDialogComplete) gameState.onDialogComplete();
+                }
+            }
+            return;
+        }
+
+        switch(gameState.stage) {
+            case 0:
+                if (type === 'A') startStageTransition(() => startStage1());
+                break;
+            case 1:
+                movePlayer(type);
+                checkStage1();
+                break;
+            case 2:
+                movePlayer(type);
+                if (type === 'A') checkStage2();
+                break;
+            case 3:
+                movePlayer(type);
+                if (type === 'A') checkStage3();
+                break;
+            case 4:
+                movePlayer(type);
+                if (type === 'A') checkStage4();
+                break;
+            case 5:
+                movePlayer(type);
+                checkStage5();
+                break;
+            case 6:
+                if (type === 'A') advanceEnding();
+                break;
+        }
+    }
+
+    function movePlayer(type) {
+        const speed = 12;
+        if (type === 'UP' && gameState.player.y > 30) gameState.player.y -= speed;
+        if (type === 'DOWN' && gameState.player.y < 250) gameState.player.y += speed;
+        if (type === 'LEFT' && gameState.player.x > 30) gameState.player.x -= speed;
+        if (type === 'RIGHT' && gameState.player.x < 250) gameState.player.x += speed;
+    }
+
+    // --- STAGES ---
+    function startStage1() {
+        gameState.stage = 1;
+        gameState.player = { x: 40, y: 180 };
+        showDialog(["[STAGE 1: 한강 데이트]", "A버튼을 누르며 물길을 따라 오리배를 저어가자!"]);
+    }
+
+    function checkStage1() {
+        if (gameState.player.x >= 220) {
+            triggerPopup('DUCKS', () => {
+                gameState.stars = 1;
+                updateStarDisplay();
+                showDialog(["한강 오리배 추억 달성!", "오빠가 불러준 달콤한 노래 생각나? 🎵", "★ 첫 번째 별 획득!"], () => {
+                    startStageTransition(() => startStage2());
+                });
+            });
+        }
+    }
+
+    function startStage2() {
+        gameState.stage = 2;
+        gameState.player = { x: 50, y: 200 };
+        showDialog(["[STAGE 2: 생활반 관물대]", "오른쪽 서랍 근처로 가서 A버튼을 눌러 '김예민' 명찰을 찾아보자!"]);
+    }
+
+    function checkStage2() {
+        if (Math.abs(gameState.player.x - 220) < 35 && Math.abs(gameState.player.y - 120) < 35) {
+            triggerPopup('NAME_TAG', () => {
+                gameState.stars = 2;
+                updateStarDisplay();
+                showDialog(["빨간 바탕의 '김예민' 명찰 발견!", "★ 두 번째 별 획득!"], () => {
+                    startStageTransition(() => startStage3());
+                });
+            });
+        } else {
+            showDialog(["관물대 서랍 쪽으로 조금 더 가까이 가보자!"]);
+        }
+    }
+
+    function startStage3() {
+        gameState.stage = 3;
+        gameState.player = { x: 140, y: 220 };
+        showDialog(["[STAGE 3: 첫 데이트 마을]", "우리의 첫 데이트 장소인 '야탑' 표지판으로 이동해서 A버튼!"]);
+    }
+
+    function checkStage3() {
+        if (gameState.player.x > 150 && gameState.player.y < 130) {
+            triggerPopup('HEART', () => {
+                gameState.stars = 3;
+                updateStarDisplay();
+                showDialog(["정답! 우리의 첫 데이트 장소는 '야탑' 💖", "★ 세 번째 별 획득!"], () => {
+                    startStageTransition(() => startStage4());
+                });
+            });
+        } else {
+            showDialog(["거기가 아니야! 오른쪽 위 '야탑' 표지판으로 가봐!"]);
+        }
+    }
+
+    function startStage4() {
+        gameState.stage = 4;
+        gameState.player = { x: 40, y: 210 };
+        showDialog(["[STAGE 4: 서희 놀이터]", "놀이터 미끄럼틀 뒤에 꼭꼭 숨은 예서를 찾아보자!"]);
+    }
+
+    function checkStage4() {
+        if (Math.abs(gameState.player.x - 220) < 35 && Math.abs(gameState.player.y - 110) < 35) {
+            triggerPopup('PLAYGROUND', () => {
+                gameState.stars = 4;
+                updateStarDisplay();
+                showDialog(["미끄럼틀 뒤에 숨어있던 예서 발견! 💕", "★ 네 번째 별 획득!"], () => {
+                    startStageTransition(() => startStage5());
+                });
+            });
+        } else {
+            showDialog(["미끄럼틀 오른쪽 뒤편을 유심히 봐봐!"]);
+        }
+    }
+
+    function startStage5() {
+        gameState.stage = 5;
+        gameState.player = { x: 40, y: 150 };
+        showDialog(["[STAGE 5: 아이스링크장]", "빙판을 따라 손을 잡고 하트 지점까지 이동해보자!"]);
+    }
+
+    function checkStage5() {
+        if (gameState.player.x >= 220) {
+            triggerPopup('ICE_RINK', () => {
+                gameState.stars = 5;
+                updateStarDisplay();
+                showDialog(["손 꼭 잡고 타던 설레는 아이스링크 데이트!", "★ 별 5개 모두 모으기 성공!"], () => {
+                    startStageTransition(() => startEnding());
+                });
+            });
+        }
+    }
+
+    function startEnding() {
+        gameState.stage = 6;
+        gameState.endingStep = 0;
+        advanceEnding();
+    }
+
+    function advanceEnding() {
+        const credits = [
+            "9개월 동안 군 생활하느라 정말 고생 많았어!",
+            "조금만 더 힘내서 다치지 말고 건강하게 전역하자 🌸",
+            "상병 진급을 진심으로 축하해 예민아!",
+            "✨ 세상에서 제일 사랑해! ✨"
+        ];
+        if (gameState.endingStep < credits.length) {
+            showDialog([credits[gameState.endingStep]]);
+            gameState.endingStep++;
+        } else {
+            showDialog(["🎉 축하합니다! 상병 진급 완료! 🎉", "[ 다시 보려면 새로고침 해주세요 ]"]);
+        }
+    }
+
+    // --- RENDER & PIXEL ART GRAPHICS ---
+
+    // 참고 이미지 스타일의 탑뷰(Top-down) 동물의 숲 픽셀 맵 랜더링
+    function drawPixelBackground() {
+        // 기본 흙길/연갈색 배경
+        ctx.fillStyle = '#c2b280';
+        ctx.fillRect(0, 0, 300, 300);
+
+        // 풀밭 블록들 (상단/하단/좌우 동숲 타일)
+        ctx.fillStyle = '#6b8e23';
+        ctx.fillRect(0, 0, 300, 50);
+        ctx.fillRect(0, 250, 300, 50);
+        ctx.fillRect(0, 0, 50, 300);
+        ctx.fillRect(250, 0, 50, 300);
+
+        // 더 짙은 초록 타일 장식
+        ctx.fillStyle = '#556b2f';
+        ctx.fillRect(10, 10, 30, 30);
+        ctx.fillRect(260, 10, 30, 30);
+        ctx.fillRect(10, 260, 30, 30);
+        ctx.fillRect(260, 260, 30, 30);
+
+        // 참고 이미지처럼 아기자기한 나무들 배치
+        drawPixelTree(15, 60);
+        drawPixelTree(15, 120);
+        drawPixelTree(265, 60);
+        drawPixelTree(265, 120);
+
+        // 미니 꽃들
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(70, 20, 4, 4);
+        ctx.fillRect(200, 20, 4, 4);
+        ctx.fillRect(70, 270, 4, 4);
+        ctx.fillRect(200, 270, 4, 4);
+    }
+
+    function drawPixelTree(x, y) {
+        ctx.fillStyle = '#3a2510';
+        ctx.fillRect(x+6, y+16, 6, 10);
+        ctx.fillStyle = '#486b00';
+        ctx.fillRect(x, y, 18, 16);
+        ctx.fillStyle = '#608b00';
+        ctx.fillRect(x+3, y+3, 12, 10);
+    }
+
+    // 도트 캐릭터 랜더링 (참고 이미지의 도트 캐릭터 비율)
+    function drawPixelCharacter(x, y, isYemin = true) {
+        ctx.save();
+        if (isYemin) {
+            // 예민 (군복/파란옷 스타일 도트)
+            ctx.fillStyle = '#1e293b'; // 머리
+            ctx.fillRect(x+4, y, 12, 6);
+            ctx.fillStyle = '#fbcfe8'; // 얼굴
+            ctx.fillRect(x+4, y+6, 12, 8);
+            ctx.fillStyle = '#000000'; // 눈
+            ctx.fillRect(x+6, y+8, 2, 2);
+            ctx.fillRect(x+12, y+8, 2, 2);
+
+            ctx.fillStyle = '#2d5a27'; // 군복 상의
+            ctx.fillRect(x+3, y+14, 14, 10);
+            ctx.fillStyle = '#1c3818'; // 하의/신발
+            ctx.fillRect(x+4, y+24, 5, 6);
+            ctx.fillRect(x+11, y+24, 5, 6);
+        } else {
+            // 예서 (핑크 원피스 도트)
+            ctx.fillStyle = '#4c1d95'; // 머리
+            ctx.fillRect(x+3, y, 14, 8);
+            ctx.fillStyle = '#fbcfe8'; // 얼굴
+            ctx.fillRect(x+4, y+6, 12, 8);
+            ctx.fillStyle = '#000000'; // 눈
+            ctx.fillRect(x+6, y+8, 2, 2);
+            ctx.fillRect(x+12, y+8, 2, 2);
+
+            ctx.fillStyle = '#db2777'; // 원피스
+            ctx.fillRect(x+3, y+14, 14, 10);
+            ctx.fillStyle = '#9d174d'; // 신발
+            ctx.fillRect(x+4, y+24, 5, 5);
+            ctx.fillRect(x+11, y+24, 5, 5);
+        }
+        ctx.restore();
+    }
+
+    // 엔딩 폴라로이드 감성 슬라이드
+    function renderAlbumSlideshow() {
+        const albumItems = [
+            { title: "1. 한강 오리배 🛶", icon: "🛶", color: "#3b82f6" },
+            { title: "2. 빨간 명찰 🏷️", icon: "🏷️", color: "#ef4444" },
+            { title: "3. 첫 데이트 야탑 💖", icon: "💖", color: "#ec4899" },
+            { title: "4. 서희 놀이터 🛝", icon: "🛝", color: "#f59e0b" },
+            { title: "5. 아이스링크 ⛸️", icon: "⛸️", color: "#06b6d4" }
+        ];
+
+        gameState.albumTimer++;
+        if (gameState.albumTimer > 160) {
+            gameState.albumTimer = 0;
+            gameState.albumIndex = (gameState.albumIndex + 1) % albumItems.length;
+        }
+
+        const current = albumItems[gameState.albumIndex];
+
+        // 픽셀 폴라로이드 프레임
+        ctx.fillStyle = '#f0ece0';
+        ctx.fillRect(65, 100, 170, 140);
+        ctx.fillStyle = '#2c2c28';
+        ctx.strokeRect(65, 100, 170, 140);
+
+        // 사진 배경
+        ctx.fillStyle = current.color;
+        ctx.fillRect(75, 110, 150, 90);
+
+        // 이모지
+        ctx.font = '36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(current.icon, 150, 168);
+
+        // 타이틀
+        ctx.fillStyle = '#1a1a16';
+        ctx.font = '16px "Gamja Flower"';
+        ctx.fillText(current.title, 150, 226);
+        ctx.textAlign = 'left';
+    }
+
+    function renderPopup() {
+        if (!gameState.popupItem) return;
+
+        ctx.fillStyle = 'rgba(20, 20, 16, 0.85)';
+        ctx.fillRect(0, 0, 300, 300);
+
+        ctx.fillStyle = '#f0ece0';
+        ctx.fillRect(30, 40, 240, 200);
+        ctx.strokeStyle = '#2c2c28';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(30, 40, 240, 200);
+
+        ctx.fillStyle = '#1a1a16';
+        ctx.font = '20px "Gamja Flower"';
+        ctx.textAlign = 'center';
+
+        if (gameState.popupItem === 'DUCKS') {
+            ctx.fillText("✨ 한강 오리배 추억 ✨", 150, 80);
+            ctx.font = '50px sans-serif';
+            ctx.fillText("🛶", 150, 145);
+        } else if (gameState.popupItem === 'NAME_TAG') {
+            ctx.fillText("✨ 커스텀 빨간 명찰 ✨", 150, 80);
+            ctx.fillStyle = '#b91c1c';
+            ctx.fillRect(75, 105, 150, 50);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px "Gamja Flower"';
+            ctx.fillText("김 예 민", 150, 138);
+        } else if (gameState.popupItem === 'HEART') {
+            ctx.fillText("💖 첫 데이트 야탑 💖", 150, 80);
+            ctx.font = '50px sans-serif';
+            ctx.fillText("💖", 150, 145);
+        } else if (gameState.popupItem === 'PLAYGROUND') {
+            ctx.fillText("🌙 서희 놀이터 추억 🌙", 150, 80);
+            ctx.font = '50px sans-serif';
+            ctx.fillText("🛝", 150, 145);
+        } else if (gameState.popupItem === 'ICE_RINK') {
+            ctx.fillText("⛸️ 아이스링크 데이트 ⛸️", 150, 80);
+            ctx.font = '50px sans-serif';
+            ctx.fillText("⛸️", 150, 145);
+        }
+
+        ctx.fillStyle = '#666660';
+        ctx.font = '14px "Gamja Flower"';
+        ctx.fillText("[ A 버튼을 눌러 계속 ]", 150, 215);
+        ctx.textAlign = 'left';
+    }
+
+    function render() {
+        updateTransition();
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        switch(gameState.stage) {
+            case 0:
+                drawPixelBackground();
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                ctx.fillRect(20, 40, 260, 210);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 24px "Gamja Flower"';
+                ctx.fillText("예민의 진급 스토리", 70, 95);
+                ctx.font = '18px "Gamja Flower"';
+                ctx.fillText("동물의 숲 픽셀 여행 🍃", 75, 135);
+                ctx.fillStyle = '#f3ce5c';
+                ctx.fillText("[ A 버튼을 눌러 시작 ]", 75, 195);
+                break;
+
+            case 1:
+                // 강물 배경
+                ctx.fillStyle = '#2563eb';
+                ctx.fillRect(0, 0, 300, 300);
+                ctx.fillStyle = '#1d4ed8';
+                ctx.fillRect(0, 50, 300, 200);
+
+                // 오리배
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(gameState.player.x, gameState.player.y, 30, 20);
+                ctx.fillRect(gameState.player.x+20, gameState.player.y-10, 12, 15);
+
+                drawPixelCharacter(gameState.player.x+4, gameState.player.y-12, true);
+                break;
+
+            case 2:
+                // 생활반 내부
+                ctx.fillStyle = '#d97706';
+                ctx.fillRect(0, 0, 300, 300);
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(20, 20, 260, 260);
+
+                // 관물대
+                ctx.fillStyle = '#451a03';
+                ctx.fillRect(200, 80, 60, 80);
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(210, 130, 40, 20);
+
+                drawPixelCharacter(gameState.player.x, gameState.player.y, true);
+                break;
+
+            case 3:
+                drawPixelBackground();
+
+                // 표지판
+                ctx.fillStyle = '#78350f';
+                ctx.fillRect(190, 60, 6, 30);
+                ctx.fillStyle = '#fef3c7';
+                ctx.fillRect(170, 50, 46, 20);
+                ctx.fillStyle = '#1a1a16';
+                ctx.font = '12px "Gamja Flower"';
+                ctx.fillText("2.야탑", 176, 64);
+
+                drawPixelCharacter(gameState.player.x, gameState.player.y, true);
+                break;
+
+            case 4:
+                drawPixelBackground();
+
+                // 미끄럼틀 기둥
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(200, 70, 40, 100);
+
+                drawPixelCharacter(225, 80, false); // 숨은 예서
+                drawPixelCharacter(gameState.player.x, gameState.player.y, true);
+                break;
+
+            case 5:
+                // 아이스링크
+                ctx.fillStyle = '#38bdf8';
+                ctx.fillRect(0, 0, 300, 300);
+                ctx.fillStyle = '#7dd3fc';
+                ctx.fillRect(20, 20, 260, 260);
+
+                // 하트 지점
+                ctx.fillStyle = '#f43f5e';
+                ctx.font = '24px sans-serif';
+                ctx.fillText("💖", 230, 155);
+
+                drawPixelCharacter(gameState.player.x, gameState.player.y, true);
+                drawPixelCharacter(gameState.player.x-16, gameState.player.y, false);
+                break;
+
+            case 6:
+                drawPixelBackground();
+                drawPixelCharacter(125, 55, true);
+                drawPixelCharacter(155, 55, false);
+
+                renderAlbumSlideshow();
+                break;
+        }
+
+        renderPopup();
+        drawTransition();
+        requestAnimationFrame(render);
+    }
+
+    render();
+</script>
+</body>
+</html>
